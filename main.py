@@ -1,3 +1,20 @@
+"""
+MarkMate - A Simple Markdown Editor with Live Preview
+
+This application provides a split-screen interface with a markdown editor on the left
+and a live preview on the right. It demonstrates the use of the Textual TUI framework
+to create a rich terminal user interface.
+
+Key components:
+- EditorPane: Text editor for writing markdown
+- ViewerPane: Live preview of the rendered markdown
+- PaneTitle: Title bar for each pane
+- MainApp: Main application class that orchestrates everything
+
+Author: PALR-DEV
+Date: July 18, 2025
+"""
+
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, VerticalScroll
 from textual.widgets import Header, Footer, TextArea, Markdown, Static
@@ -5,7 +22,16 @@ from textual.message import Message
 
 
 class EditorPane(TextArea):
-    """Multiline editor that emits a Changed event when edited."""
+    """Multiline editor that emits a Changed event when edited.
+    
+    This class extends Textual's TextArea widget to provide markdown editing functionality.
+    It includes default content, keyboard bindings, and custom event handling to notify
+    other components when the content changes.
+    
+    Attributes:
+        BINDINGS: Keyboard shortcuts mapped to actions
+        DEFAULT_MARKDOWN: Initial markdown content to display
+    """
     
     BINDINGS = [("ctrl+s", "save", "Save")]
     
@@ -48,19 +74,41 @@ Enjoy writing with **MarkMate**!
         self.notify("Document saved!", title="Save")
 
     def on_text_changed(self) -> None:
+        """Handle text changed events.
+        
+        This method is automatically called when the content of the TextArea
+        changes. It fires a custom Changed event with the current content,
+        which will be caught by the MainApp to update the preview.
+        """
         # Fire the custom Changed message with current content
         self.post_message(self.Changed(self, self.value))
 
 
 class PaneTitle(Static):
-    """Title bar for panes."""
+    """Title bar for panes.
+    
+    A simple widget to display a title at the top of each pane.
+    The styling for this component is defined in the MainApp's CSS.
+    
+    Args:
+        title: The text to display in the title bar
+        **kwargs: Additional arguments to pass to the Static widget
+    """
     
     def __init__(self, title: str, **kwargs) -> None:
         super().__init__(title, **kwargs)
 
 
 class ViewerPane(VerticalScroll):
-    """Container for markdown preview."""
+    """Container for markdown preview.
+    
+    This class wraps a Markdown widget in a scrollable container
+    to provide a preview of the rendered markdown content. It
+    contains a method to update the content based on the editor's text.
+    
+    Attributes:
+        preview: The Markdown widget that renders the content
+    """
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
@@ -77,6 +125,19 @@ class ViewerPane(VerticalScroll):
 
 
 class MainApp(App):
+    """Main application class for MarkMate.
+    
+    This class orchestrates the entire application. It creates the layout,
+    handles events, and manages the communication between components.
+    
+    The layout consists of a horizontal split with the editor on the left
+    and the preview on the right. When the editor content changes, the
+    preview is updated automatically.
+    
+    Attributes:
+        CSS: Styling for the application components
+    """
+    
     CSS = """
     EditorPane {
         width: 1fr;
@@ -104,6 +165,15 @@ class MainApp(App):
     """
 
     def compose(self) -> ComposeResult:
+        """Create the user interface layout.
+        
+        This method sets up the UI structure with a header, footer, and the
+        main content area split into editor and preview panes. Each pane
+        has a title and appropriate widgets.
+        
+        Returns:
+            A generator of widgets to be displayed in the app.
+        """
         yield Header()
         with Horizontal():
             with VerticalScroll(id="editor-container"):
@@ -126,5 +196,10 @@ class MainApp(App):
 
 
 if __name__ == "__main__":
+    """Entry point of the application.
+    
+    This block runs when the script is executed directly.
+    It creates an instance of the MainApp and starts the application.
+    """
     app = MainApp()
     app.run()

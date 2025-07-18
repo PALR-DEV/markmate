@@ -1,64 +1,86 @@
-# mdview — Terminal Markdown Note Taker
+# MarkMate - Terminal Markdown Editor with Live Preview
 
-> A terminal-first CLI tool for editing and previewing Markdown side by side.
+> A split-screen Markdown editor with real-time preview built with the Textual TUI framework.
 
 ---
 
 ## 📖 Concept & Idea
 
-**mdview** is a terminal-based note-taking application designed for developers, writers, and power users who prefer to stay within the command line. It provides:
+**MarkMate** is a terminal-based markdown editing application designed for developers, writers, and power users who prefer to stay within the command line. It provides:
 
-- **Left pane**: Markdown editor with live typing
-- **Right pane**: Instant rendered preview
+- **Left pane**: A full-featured markdown editor with syntax highlighting
+- **Right pane**: Real-time rendered preview that updates as you type
 
-Notes are stored as plain `.md` files, ensuring portability, versioning, and simplicity.
+MarkMate provides a distraction-free writing environment right in your terminal.
 
 ## 💡 Why This Tool Exists
 
 1. **Minimal Context Switching**: Stay in your terminal without launching a browser or separate editor.
-2. **Live Feedback**: Instant preview of headers, lists, code blocks, and more as you type.
-3. **Plain-Text Power**: Uses standard Markdown files—no proprietary formats or databases.
-4. **Git-Friendly**: Easily version, branch, and collaborate on notes using your existing Git workflow.
+2. **Live Feedback**: Instant preview of headers, lists, code blocks, and formatting as you type.
+3. **Terminal-First Design**: Built for developers who live in the terminal.
+# Code Structure
 
-## ✅ Usefulness & Benefits
+## Main Components
 
-- **Efficiency**: Edit documentation, READMEs, and notes all within the terminal.
-- **Collaboration**: Store notes alongside code in a Git repository for backup and teamwork.
-- **Lightweight**: No heavy GUI dependencies; runs on any system with Python and a terminal.
+The application is structured around four main components:
 
-## 🚀 Key Features (MVP)
+1. **`EditorPane`** - The text editor for writing markdown
+   - Extends Textual's `TextArea` with markdown-specific functionality
+   - Emits custom events when content changes
+   - Includes keyboard bindings like Ctrl+S for save actions
 
-- 🔄 **Split-Screen UI** — Editor + Live Preview
-- 💾 **Save & Reload** — Press Ctrl+S to write changes back to your file
+2. **`ViewerPane`** - The preview pane for rendered markdown
+   - Contains a scrollable container with a Markdown widget
+   - Updates in real-time as the editor content changes
+
+3. **`PaneTitle`** - Styled title bar for each pane
+   - Simple widget to provide visual separation and labeling
+
+4. **`MainApp`** - The main application orchestrator
+   - Sets up the UI layout and styling
+   - Handles events between components
+   - Manages the state of the application
+
+## Event Flow
+
+The live preview functionality works through this event flow:
+
+1. User types in the `EditorPane`
+2. `on_text_changed()` fires and posts a `Changed` message
+3. `MainApp.on_editor_pane_changed()` catches this message
+4. The viewer is updated with the new content
 
 ## ⚙️ Installation
 
 ```bash
-pip install markdown-it-py pygit2
+# Clone the repository
+git clone https://github.com/PALR-DEV/markmate.git
+cd markmate
+
+# Create a virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install dependencies
+pip install textual
 ```
 
 ## 🚀 Usage
 
-### Single File Mode
-
 ```bash
-mdview README.md
+# Run the application
+python main.py
 ```
 
-### Quick New Note
+## 🛠️ Future Enhancements
 
-```bash
-mdview new "Meeting Notes"
-```
-
-
-## 🛠️ Development & Contribution
-
-1. Clone the repository and install dependencies.
-2. Explore the `main.py` entry point to understand the split-view layout.
-3. Contributions welcome! Feel free to open issues or submit pull requests.
+- File saving and loading functionality
+- Multiple tabs for editing different files
+- Custom themes and styling options
+- Markdown extension support
+- Export to HTML or PDF
 
 ## 🌐 License
 
-MIT © Pedro Lorenzo Rosario
+MIT © Pedro Alejandro Lorenzo Rosario
 
